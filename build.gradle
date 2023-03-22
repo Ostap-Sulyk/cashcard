@@ -14,11 +14,15 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.jetbrains:annotations:23.0.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 	// database
 	implementation 'org.springframework.data:spring-data-jdbc'
 	testImplementation 'com.h2database:h2'
+
+	// security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
