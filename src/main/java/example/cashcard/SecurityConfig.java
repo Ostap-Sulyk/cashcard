@@ -1,6 +1,5 @@
 package example.cashcard;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain filterChain(@NotNull HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
                 .requestMatchers("/cashcards/**")
-                .authenticated()
+                .hasRole(Constants.cardOwner)
                 .and()
                 .csrf().disable()
                 .httpBasic();
@@ -27,20 +26,30 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService testOnlyUser(PasswordEncoder passwordEncoder){
-
+    public UserDetailsService testOnlyUsers(PasswordEncoder passwordEncoder) {
         User.UserBuilder users = User.builder();
+
         UserDetails sarah = users
-                .username("sarah1")
-                .password(passwordEncoder.encode("abc123"))
-                .roles()
+                .username(Constants.sarahUserName)
+                .password(passwordEncoder.encode(Constants.sarahPassword))
+                .roles(Constants.cardOwner)
                 .build();
 
-        return new InMemoryUserDetailsManager(sarah);
+        UserDetails hankOwnsNoCards = users
+                .username(Constants.hankUserName)
+                .password(passwordEncoder.encode(Constants.hankPassword))
+                .roles(Constants.nonOwner)
+                .build();
+
+        return new InMemoryUserDetailsManager(sarah,hankOwnsNoCards);
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }
